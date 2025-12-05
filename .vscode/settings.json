@@ -1,0 +1,10 @@
+{
+    "editor.colorDecorators": false,
+    "emmet.includeLanguages": {
+        "django-html": "html",
+        "html": "html"
+    },
+    "files.associations": {
+        "*.html": "html"
+    }
+}

@@ -1,0 +1,22 @@
+{
+  "emmet.includeLanguages": {
+    "javascript": "html",
+    "javascriptreact": "html",
+    "typescriptreact": "html",
+    "ejs": "html",
+    "django-html": "html",
+    "plaintext": "html"
+  },
+  "emmet.triggerExpansionOnTab": true,
+  "editor.quickSuggestions": {
+    "strings": true
+  },
+  "files.associations": {
+    "*.html": "html",
+    "*.htm": "html",
+    "*.js": "javascript",
+    "*.css": "css",
+    "*.ejs": "html",
+    "*.djhtml": "django-html"
+  }
+}

@@ -1,6 +1,9 @@
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
-
+import json
+from django.views.decorators.csrf import csrf_exempt
+from django.db.utils import IntegrityError
+from basic.models import UserProfile, Employee, Product
 # Create your views here.
 def base(request):
     return render(request, 'base.html')
@@ -89,3 +92,65 @@ def pagination(request):
     }
 
     return JsonResponse(res)
+
+def pagination1(request):
+    fruits = ["Apple", "Banana", "Orange", "Mango", "Grapes", "Strawberry", "Pineapple", "Kiwi", "Watermelon", "Peach"]
+    page = int(request.GET.get("page", 1))
+    limit = int(request.GET.get("limit", 3))
+    
+    start = (page-1)*limit
+    end = page*limit
+    total_pages = (len(fruits) + limit - 1) // limit
+    result = fruits[start:end]
+    res = {"status":"success","current_page":page, "total_pages":total_pages, "fruits":result}
+    return JsonResponse (res)
+
+@csrf_exempt
+def createdata(request):
+    try:
+        if request.method =="POST":
+            data = json.loads(request.body) #dictionary
+            name = data.get("name") #making name proprty from dictionary
+            age = data.get("age")
+            city = data.get("city")
+            UserProfile.objects.create(name=name, age=age, city=city)
+            print(data)
+        return JsonResponse({"status":"success", "data":data, "statuscode":201}, status = 201)
+    except Exception as e:
+        return JsonResponse({"statuscode":500, "message":"internal server error"})
+# @csrf_exempt
+# def createproduct(request):
+#     if request.method =="POST":
+#         data = json.loads(request.body)
+#         print(data)
+#     return JsonResponse({"status":"success", "data":data, "statuscode":201})
+
+@csrf_exempt
+def createEmployee(request):
+    try:
+        if request.method == "POST":
+            data = json.loads(request.body)
+            Employee.objects.create(emp_name = data.get("emp_name"), emp_sal = data.get("emp_sal"), emp_email = data.get("emp_email"))
+            print(data)
+        return JsonResponse({"status":"success", "data":data, "statuscode":201}, status = 201)
+    except IntegrityError as e:
+        return JsonResponse({"statuscode":500, "message":"duplicate values are not allowed / check the field names properly"}, status = 401)
+    except Exception as e:
+        return JsonResponse({"statuscode":500, "message":str(e)}, status = 500)
+    finally:
+        print("done")
+        
+@csrf_exempt
+def createproduct(request):
+    try:
+        if request.method == "POST":
+            data = json.loads(request.body)
+            Product.objects.create(product_name = data.get("product_name"), product_price = data.get("product_price"), product_quantity = data.get("product_quantity"))
+            print(data)
+        return JsonResponse({"status":"success", "data":data, "total_price": int(data.get("product_price")) * int(data.get("product_quantity")), "statuscode":201}, status = 201)
+    except IntegrityError as e:
+        return JsonResponse({"statuscode":500, "message":"duplicate values are not allowed / check the field names properly"}, status = 401)
+    except Exception as e:
+        return JsonResponse({"statuscode":500, "message":str(e)}, status = 500)
+    finally:
+        print("done")        
